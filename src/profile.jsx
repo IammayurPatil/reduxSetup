@@ -1,29 +1,30 @@
-import { useEffect, useState } from "react";
-import axiosInstance from "../axios";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserData } from "./redux/loginThunk";
 
 export function Profile() {
-  const [user, setUser] = useState(null);
+  const dispatch = useDispatch();
+
+  const profileData = useSelector((state) => state?.profile?.userData) 
+  console.log("profileData",profileData?.profile?.userData);
+  
 
   useEffect(() => {
     const fetchprofile = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await axiosInstance.get("/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        console.log("response",response)
-        setUser(response.data.user);
+        dispatch(fetchUserData());
       } catch (error) {
         console.log(error);
       }
     };
+    // dispatch(fetchUserData());
     fetchprofile()
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
-      <h2>Profile</h2>
-      {user ? <p>Welcome, {user.username}!</p> : <p>Loading...</p>}
+      <h2 onClick={()=> {dispatch(fetchUserData)}}>Profile</h2>
+      {profileData ? <p>Welcome, {profileData?.user?.username}!</p> : <p>Loading...</p>}
     </>
   );
 }
